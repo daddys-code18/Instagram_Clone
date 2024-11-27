@@ -1,8 +1,16 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
+import connectDb from "./utlis/db.js";
+
+dotenv.config({});
 
 const app = express();
+const PORT = process.env.PORT || 4000;
+
+// Connecting Database
+connectDb();
 
 // Middleware
 app.use(express.json());
@@ -15,8 +23,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-const PORT = 4000;
-
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "I Am Coming from backend",
@@ -25,5 +31,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
+  // connectDb();
   console.log(`Server is Listening at Port:${PORT}`);
 });
