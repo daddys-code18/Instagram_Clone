@@ -2,7 +2,8 @@ import Signup from './components/Signup'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Login from './components/Login'
 import MainLayout from './components/MainLayout'
-import { Home } from 'lucide-react'
+import Profile from './components/Profile'
+import Home from './components/Home'
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -12,6 +13,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       }
     ]
 
