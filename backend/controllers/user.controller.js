@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import getDataUri from "./../utlis/datauri.js";
 import cloudinary from "./../utlis/cloudinary.js";
 import bcrypt from "bcryptjs";
+import { Post } from "../models/post.model.js";
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;

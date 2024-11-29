@@ -1,9 +1,8 @@
 import sharp from "sharp";
-import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
+import { User } from "../models/user.model.js";
 import cloudinary from "./../utlis/cloudinary.js";
-import { populate } from "dotenv";
-import { Comment } from "./../models/comment.model";
+import { Comment } from "./../models/comment.model.js";
 export const addNewPost = async (req, res) => {
   try {
     const { caption } = req.body;
@@ -41,6 +40,29 @@ export const addNewPost = async (req, res) => {
       await user.save();
     }
     await post.populate({ path: "author", select: "-password" });
+    return res.status(201).json({
+      message: "New post added",
+      post,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllPost = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate({ path: "author", select: "username profilePicture" })
+      .populate({
+        path: "comments",
+        sort: { createdAt: -1 },
+        populate: {
+          path: "author",
+          select: "username profilePicture",
+        },
+      });
     return res.status(200).json({
       posts,
       success: true,
@@ -49,7 +71,6 @@ export const addNewPost = async (req, res) => {
     console.log(error);
   }
 };
-
 export const getUserPost = async (req, res) => {
   try {
     const authorId = req.id;
