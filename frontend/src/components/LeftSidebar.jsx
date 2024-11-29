@@ -4,34 +4,24 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { setAuthUser } from '@/redux/authSlice'
 
 
-const sidebarItems = [
-    { icon: <Home />, text: "Home" },
-    { icon: <Search />, text: "Search" },
-    { icon: <TrendingUp />, text: "Explore" },
-    { icon: <MessageCircle />, text: "Messages" },
-    { icon: <Heart />, text: "Notifications" },
-    { icon: <PlusSquare />, text: "Create" },
-    {
-        icon: (
-            <Avatar className='w-6 h-6'>
-                <AvatarImage src={""} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-        ), text: "Profile"
-    }, { icon: <LogOut />, text: "Logout" },
 
-]
 const LeftSidebar = () => {
     const navigate = useNavigate();
+    const { user } = useSelector(store => store.auth)
+    const dispatch = useDispatch()
     const logoutHandler = async () => {
         try {
             const res = await axios.post("http://localhost:4000/api/v1/user/logout", { withCredentials: true })
 
             if (res.data.success) {
-                toast.success(res.data.message)
+                dispatch(setAuthUser(null))
                 navigate("/login");
+
+                toast.success(res.data.message)
             }
         } catch (error) {
             toast.error(error.response.data.message);
@@ -43,6 +33,23 @@ const LeftSidebar = () => {
             logoutHandler();
         }
     }
+    const sidebarItems = [
+        { icon: <Home />, text: "Home" },
+        { icon: <Search />, text: "Search" },
+        { icon: <TrendingUp />, text: "Explore" },
+        { icon: <MessageCircle />, text: "Messages" },
+        { icon: <Heart />, text: "Notifications" },
+        { icon: <PlusSquare />, text: "Create" },
+        {
+            icon: (
+                <Avatar className='w-6 h-6'>
+                    <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+            ), text: "Profile"
+        }, { icon: <LogOut />, text: "Logout" },
+
+    ]
     return (
         <>
             <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%} h-screen">
