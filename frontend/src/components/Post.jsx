@@ -5,13 +5,18 @@ import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
 import { Button } from './ui/button'
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from './CommentDialog'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+import { toast } from 'sonner'
+import { setPosts } from '@/redux/postSlice'
 
 const Post = ({ post }) => {
     const [text, setText] = useState("")
     const [open, setOpen] = useState(false)
     const { user } = useSelector(store => store.auth)
+    const { posts } = useSelector(store => store.post);
 
+    const dispatch = useDispatch();
     const changeEventHandler = (e) => {
         const InputText = e.target.value
         if (InputText.trim()) {
@@ -20,7 +25,20 @@ const Post = ({ post }) => {
             setText("")
         }
     }
-    const 
+    const deletePostHandler = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:4000/api/v1/post/delete/${post?._id}`, { withCredentials: true })
+            if (res.data.success) {
+                const updatePostData = posts.filter((postItem) => postItem?._id !== post?._id)
+                dispatch(setPosts(updatePostData));
+                toast.success(res.data.message)
+            }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.messsage);
+        }
+    }
     return (
         <div className="my-8 w-full max-w-sm mx-auto">
             <div className="flex item-center justify-between">
@@ -39,7 +57,7 @@ const Post = ({ post }) => {
                         <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956]">Unfollow</Button>
                         <Button variant="ghost" className="cursor-pointer w-fit">Add to favorites</Button>
                         {
-                            user && user?._id === post?.author._id && <Button variant="ghost" className="cursor-pointer w-fit"> Delete</Button>
+                            user && user?._id === post?.author._id && <Button onClick={deletePostHandler} variant="ghost" className="cursor-pointer w-fit"> Delete</Button>
 
                         }
                     </DialogContent>
