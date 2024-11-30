@@ -8,7 +8,7 @@ import CommentDialog from './CommentDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from 'sonner'
-import { setPosts } from '@/redux/postSlice'
+import { setPosts, setSelectedPost } from '@/redux/postSlice'
 
 const Post = ({ post }) => {
     const [text, setText] = useState("")
@@ -20,6 +20,7 @@ const Post = ({ post }) => {
     const [comment, setComment] = useState(post.comments);
 
     const dispatch = useDispatch();
+
     const changeEventHandler = (e) => {
         const InputText = e.target.value
         if (InputText.trim()) {
@@ -53,6 +54,33 @@ const Post = ({ post }) => {
             console.log(error)
         }
     }
+    const commentHandler = async () => {
+
+        try {
+            const res = await axios.post(`http://localhost:4000/api/v1/post/${post._id}/comment`, { text }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true
+            });
+            console.log(res.data);
+            if (res.data.success) {
+                const updatedCommentData = [...comment, res.data.comment];
+                setComment(updatedCommentData);
+
+                const updatedPostData = posts.map(p =>
+                    p._id === post._id ? { ...p, comments: updatedCommentData } : p
+                );
+
+                dispatch(setPosts(updatedPostData));
+                toast.success(res.data.message);
+                setText("");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const deletePostHandler = async () => {
         try {
             const res = await axios.delete(`http://localhost:4000/api/v1/post/delete/${post?._id}`, { withCredentials: true })
@@ -109,7 +137,14 @@ const Post = ({ post }) => {
                 <span className='font-medium mr-2'>{post.author?.username}</span>
                 {post.caption}
             </p>
-            <span onClick={() => setOpen(true)} className='cursor-pointer text-gray-400'> View All 10 comments</span>
+            {
+                comment.length > 0 && (
+                    <span onClick={() => {
+                        // dispatch(setSelectedPost(post));
+                        setOpen(true);
+                    }} className='cursor-pointer text-sm text-gray-400'>View all {comment.length} comments</span>
+                )
+            }
             <CommentDialog open={open} setOpen={setOpen} />
             <div className="flex items-center justify-between">
                 <input type="text"
@@ -119,7 +154,7 @@ const Post = ({ post }) => {
                     className=' outline-none text-sm w-full' />
                 {
                     text &&
-                    <span className='text-[#38ADF8]'>Post</span>
+                    <span onClick={commentHandler} className='text-[#38ADF8] cursor-pointer'>Post</span>
 
                 }
             </div>
