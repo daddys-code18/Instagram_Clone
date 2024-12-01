@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authSlice.js";
 import postSlice from "./postSlice.js";
 import chatSlice from "./chatSlice.js";
+import socketSlice from "./socketSlice.js";
 import {
   persistReducer,
   FLUSH,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   auth: authSlice,
   post: postSlice,
   chat: chatSlice,
+  socketio: socketSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
