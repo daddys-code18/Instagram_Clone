@@ -5,6 +5,7 @@ import MainLayout from './components/MainLayout'
 import Profile from './components/Profile'
 import Home from './components/Home'
 import EditProfile from './components/EditProfile'
+import ChatPage from './components/ChatPage'
 
 const BrowserRouter = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const BrowserRouter = createBrowserRouter([
       {
         path: "/account/edit",
         element: <EditProfile />,
+      },
+      {
+        path: "/chat",
+        element: <ChatPage />,
       }
     ]
 
